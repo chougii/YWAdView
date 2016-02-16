@@ -9,5 +9,8 @@
 #import <UIKit/UIKit.h>
 
 @interface YWAdView : UIScrollView
-
+/**
+ *  imgid,imgurl,imgtext
+ */
+@property(strong,nonatomic) NSArray * dataDictArray;
 @end
