@@ -15,6 +15,7 @@
 		A2AC191E1C72CDBC003DF81D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A2AC191C1C72CDBC003DF81D /* LaunchScreen.storyboard */; };
 		A2AC19291C72CDBC003DF81D /* YWAdViewTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A2AC19281C72CDBC003DF81D /* YWAdViewTests.m */; };
 		A2AC19341C72CDBC003DF81D /* YWAdViewUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = A2AC19331C72CDBC003DF81D /* YWAdViewUITests.m */; };
+		A2AC19441C72CEF8003DF81D /* YWAdView.m in Sources */ = {isa = PBXBuildFile; fileRef = A2AC19431C72CEF8003DF81D /* YWAdView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -51,6 +52,8 @@
 		A2AC192F1C72CDBC003DF81D /* YWAdViewUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = YWAdViewUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A2AC19331C72CDBC003DF81D /* YWAdViewUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YWAdViewUITests.m; sourceTree = "<group>"; };
 		A2AC19351C72CDBC003DF81D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A2AC19421C72CEF8003DF81D /* YWAdView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YWAdView.h; sourceTree = "<group>"; };
+		A2AC19431C72CEF8003DF81D /* YWAdView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YWAdView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -101,6 +104,7 @@
 		A2AC190D1C72CDBC003DF81D /* YWAdView */ = {
 			isa = PBXGroup;
 			children = (
+				A2AC19411C72CEDD003DF81D /* YWAdView */,
 				A2AC19111C72CDBC003DF81D /* AppDelegate.h */,
 				A2AC19121C72CDBC003DF81D /* AppDelegate.m */,
 				A2AC19141C72CDBC003DF81D /* ViewController.h */,
@@ -138,6 +142,15 @@
 				A2AC19351C72CDBC003DF81D /* Info.plist */,
 			);
 			path = YWAdViewUITests;
+			sourceTree = "<group>";
+		};
+		A2AC19411C72CEDD003DF81D /* YWAdView */ = {
+			isa = PBXGroup;
+			children = (
+				A2AC19421C72CEF8003DF81D /* YWAdView.h */,
+				A2AC19431C72CEF8003DF81D /* YWAdView.m */,
+			);
+			path = YWAdView;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -271,6 +284,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A2AC19161C72CDBC003DF81D /* ViewController.m in Sources */,
+				A2AC19441C72CEF8003DF81D /* YWAdView.m in Sources */,
 				A2AC19131C72CDBC003DF81D /* AppDelegate.m in Sources */,
 				A2AC19101C72CDBC003DF81D /* main.m in Sources */,
 			);
