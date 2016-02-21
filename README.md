@@ -42,3 +42,11 @@ adv.dataDictArray = [self getdata];
     return temp;
 }
 ```
+  
+其他设置  
+1.分页指示器位置
+```
+//adv.PageAlignment = YWAdPagerAlignmentCenter;(默认)
+                      YWAdPagerAlignmentLeft;
+                      YWAdPagerAlignmentRight;
+```
