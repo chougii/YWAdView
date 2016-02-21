@@ -73,8 +73,6 @@
     UIButton * btnRight = [[UIButton alloc] initWithFrame:CGRectMake(SELFWIDTH*2, 0, SELFWIDTH, SELFHEIGHT)];
     btnRight.backgroundColor = [UIColor yellowColor];
     [self addSubview:btnRight];
-    
-    
 }
 
 /**
