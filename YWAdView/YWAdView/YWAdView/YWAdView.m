@@ -10,46 +10,68 @@
 #define SELFWIDTH  self.bounds.size.width//广告的宽度
 #define SELFHEIGHT  self.bounds.size.height//广告的高度
 @interface YWAdView()<UIScrollViewDelegate>
-@property (nonatomic,weak) UIButton * leftView;
-@property (nonatomic,weak) UIButton * centerView;
-@property (nonatomic,weak) UIButton * rightView;
-@property (nonatomic,strong) NSArray * localImageArray;
+@property (nonatomic,strong) NSMutableDictionary * localImageDict;
+@property (nonatomic,weak) UIPageControl * pageControl;
+@property (nonatomic,weak) UIScrollView * scrollView;
+@property (nonatomic,assign) int curPage;
+@property (nonatomic,strong) NSTimer * timer;
+
+
 @end
 @implementation YWAdView
 
 -(instancetype)initWithFrame:(CGRect)frame
 {
     if (self=[super initWithFrame:frame]) {
-        self.bounces = NO;
-        self.showsHorizontalScrollIndicator = NO;
-        self.showsVerticalScrollIndicator = NO;
-        self.pagingEnabled = YES;
-        self.contentOffset = CGPointMake(SELFWIDTH, 0);
-        self.contentSize = CGSizeMake(SELFWIDTH * 3,100);
-        NSLog(@"contentSize%@",NSStringFromCGSize(self.contentSize));
-        NSLog(@"contentOffset%@",NSStringFromCGPoint(self.contentOffset));
-        self.delegate = self;
+        UIScrollView * scrollView = [UIScrollView new];
+        scrollView.frame = CGRectMake(0, 0, SELFWIDTH, SELFHEIGHT);
+        scrollView.scrollEnabled = YES;
+        scrollView.bounces  = NO;
+        self.scrollView = scrollView;
+        [self addSubview:scrollView];
+        self.scrollView.showsHorizontalScrollIndicator = NO;
+        self.scrollView.showsVerticalScrollIndicator = NO;
+        self.scrollView.pagingEnabled = YES;
+        self.scrollView.contentOffset = CGPointMake(0, 0);
+        NSLog(@"contentSize%@",NSStringFromCGSize(self.scrollView.contentSize));
+        NSLog(@"contentOffset%@",NSStringFromCGPoint(self.scrollView.contentOffset));
+        self.scrollView.delegate = self;
+        
+        UIPageControl * pg = [UIPageControl new];
+        pg.bounds = CGRectMake(0, 0, 100, 20);
+        pg.center = CGPointMake(SELFWIDTH/2, SELFHEIGHT-10);
+        self.pageControl = pg;
+        [self addSubview:pg];
+        
+        NSTimer * timer = [NSTimer scheduledTimerWithTimeInterval:3 target:self selector:@selector(timerjump) userInfo:nil repeats:YES];
+        self.timer = timer;
     }
     return self;
 }
--(NSArray *)localImageArray
+
+-(NSMutableDictionary *)localImageDict
 {
-    if (_localImageArray==nil) {
-        NSMutableArray * tempArray = [NSMutableArray array];
+    if (!_localImageDict) {
         NSUserDefaults * def = [NSUserDefaults standardUserDefaults];
-        NSArray * localImageNames = [def objectForKey:@"YWAdCache_ImageNames"];
-        for (int i = 0; i<localImageNames.count; i++) {
-            NSString * imgPath = [self cachePathWithImageName:localImageNames[i]];
-            [tempArray addObject:imgPath];
+        _localImageDict =  [def objectForKey:@"YWAdCache_DictUrlLocalPath"];
+        if (_localImageDict==nil) {
+            _localImageDict = [NSMutableDictionary dictionary];
         }
-        _localImageArray = tempArray;
     }
-    return _localImageArray;
+    return _localImageDict;
 }
+
 
 -(void)setDataDictArray:(NSArray *)dataDictArray
 {
     _dataDictArray = dataDictArray;
+     self.scrollView.contentSize = CGSizeMake(SELFWIDTH * self.dataDictArray.count,120);
+    self.pageControl.pageIndicatorTintColor = [UIColor orangeColor];
+    self.pageControl.currentPageIndicatorTintColor = [UIColor whiteColor];
+    self.pageControl.numberOfPages = dataDictArray.count;
+    self.pageControl.bounds = CGRectMake(0, 0, 20*dataDictArray.count, 20);
+    self.pageControl.currentPage=0;
+    self.backgroundColor = [UIColor redColor];
     //多线程加载/缓存图片
     dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
     dispatch_async(queue, ^{
@@ -63,16 +85,16 @@
 
 -(void)setupViews
 {
-    UIButton * btnLeft = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, SELFWIDTH, SELFHEIGHT)];
-    btnLeft.backgroundColor = [UIColor redColor];
-    [btnLeft setImage:[UIImage imageWithContentsOfFile:self.localImageArray[0]] forState:UIControlStateNormal];
-    [self addSubview:btnLeft];
-    UIButton * btnCenter = [[UIButton alloc] initWithFrame:CGRectMake(SELFWIDTH, 0, SELFWIDTH, SELFHEIGHT)];
-    btnCenter.backgroundColor = [UIColor blueColor];
-    [self addSubview:btnCenter];
-    UIButton * btnRight = [[UIButton alloc] initWithFrame:CGRectMake(SELFWIDTH*2, 0, SELFWIDTH, SELFHEIGHT)];
-    btnRight.backgroundColor = [UIColor yellowColor];
-    [self addSubview:btnRight];
+    for (int i = 0; i<self.dataDictArray.count; i++) {
+        NSDictionary * dict = [self.dataDictArray objectAtIndex:i];
+        NSString * localImagePath = [self cachePathWithImageName: [self.localImageDict objectForKey:[dict valueForKey:@"imgurl"]]];
+        UIButton * btn = [[UIButton alloc] initWithFrame:CGRectMake(SELFWIDTH*i,0, SELFWIDTH, SELFHEIGHT)];
+        
+        UIImage * img= [UIImage imageWithContentsOfFile:localImagePath];
+        [btn setBackgroundImage:img forState:UIControlStateNormal];
+        [self.scrollView addSubview:btn];
+    }
+    [self.timer fire];
 }
 
 /**
@@ -80,35 +102,40 @@
  */
 -(void)cacheImage
 {
-    NSMutableArray * localImageNameArray = [NSMutableArray array];
+  
     for (int i = 0; i<self.dataDictArray.count; i++) {
-        //图片名
-        NSString * imgName = [NSString stringWithFormat:@"y%@",[NSString stringWithFormat:@"%ld", (long)[[NSDate date] timeIntervalSince1970]]];
+        //获取图片地址
         NSDictionary * dict = self.dataDictArray[i];
-        NSData *imgData = [NSData dataWithContentsOfURL:[NSURL URLWithString:[dict valueForKey:@"imgurl"]]];
-        //设置压缩比例
-        NSData *scaleimgData = UIImageJPEGRepresentation([UIImage imageWithData:imgData], 0.5);
-        //获取沙盒路径
-        NSString*imagePath=[self cachePathWithImageName:imgName];
-        
-        // 将图片写入文件
-        BOOL rst = [scaleimgData writeToFile:imagePath atomically:YES];
-        //如果首次写入失败，再次尝试写入3次直至写入成功
-        if (!rst) {
-            for (int n= 0; n<3; n++) {
-                BOOL rerestore = [imgData writeToFile:imagePath atomically:YES];
-                if (rerestore) {
-                    rst = YES;
-                    break;
+        NSString * imgUrlStr = [dict valueForKey:@"imgurl"];
+        NSString * imagePath = [self.localImageDict objectForKey:imgUrlStr];
+        if (imagePath==nil) {
+            //图片名
+            NSString * imgName = [NSString stringWithFormat:@"y%@",[NSString stringWithFormat:@"%ld", (long)[[NSDate date] timeIntervalSince1970]]];
+            
+            NSData *imgData = [NSData dataWithContentsOfURL:[NSURL URLWithString:imgUrlStr]];
+            //设置压缩比例
+            NSData *scaleimgData = UIImageJPEGRepresentation([UIImage imageWithData:imgData], 1);
+            //获取沙盒路径
+            NSString*imagePath=[self cachePathWithImageName:imgName];
+            
+            // 将图片写入本地
+            BOOL rst = [scaleimgData writeToFile:imagePath atomically:YES];
+            //如果首次写入失败，再次尝试写入2次直至写入成功
+            if (!rst) {
+                for (int n= 0; n<2; n++) {
+                    BOOL rerestore = [imgData writeToFile:imagePath atomically:YES];
+                    if (rerestore) {
+                        rst = YES;
+                        break;
+                    }
                 }
             }
+            [self.localImageDict setObject:imgName forKey:imgUrlStr];
         }
-        
-        [localImageNameArray addObject:imgName];
     }
     
     NSUserDefaults * def = [NSUserDefaults standardUserDefaults];
-    [def setObject:localImageNameArray forKey:@"YWAdCache_ImageNames"];
+    [def setObject:self.localImageDict forKey:@"YWAdCache_DictUrlLocalPath"];
     [def synchronize];
 }
 
@@ -119,5 +146,22 @@
     NSString*imagePath=[path stringByAppendingString:[NSString stringWithFormat:@"/%@.jpg",imageName]];
     
     return imagePath;
+}
+
+
+-(void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+    self.pageControl.currentPage = (scrollView.contentOffset.x/SELFWIDTH)+0.5;
+    [self.timer setFireDate:[NSDate dateWithTimeIntervalSinceNow:3]];
+}
+-(void)timerjump
+{
+    CGPoint contentoffset = self.scrollView.contentOffset;
+    contentoffset.x +=SELFWIDTH;
+    if (contentoffset.x>=SELFWIDTH*self.dataDictArray.count) {
+        contentoffset.x=0;
+    }
+    [self.scrollView setContentOffset:contentoffset animated:YES];
+    
 }
 @end
