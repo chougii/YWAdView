@@ -16,7 +16,6 @@
 @property (nonatomic,assign) int curPage;
 @property (nonatomic,strong) NSTimer * timer;
 
-
 @end
 @implementation YWAdView
 
@@ -163,5 +162,20 @@
     }
     [self.scrollView setContentOffset:contentoffset animated:YES];
     
+}
+
+-(void)setPageAlignment:(YWAdPagerAlignment)PageAlignment
+{
+    _PageAlignment = PageAlignment;
+    switch (PageAlignment) {
+        case YWAdPagerAlignmentLeft:
+            self.pageControl.frame = CGRectMake(10, SELFHEIGHT-20, self.dataDictArray.count*20, 20);
+            break;
+        case YWAdPagerAlignmentRight:
+            self.pageControl.frame = CGRectMake(SELFWIDTH-self.dataDictArray.count*20-10, SELFHEIGHT-20, self.dataDictArray.count*20, 20);
+            break;
+        default:
+            break;
+    }
 }
 @end

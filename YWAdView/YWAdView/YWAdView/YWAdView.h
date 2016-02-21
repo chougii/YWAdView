@@ -7,10 +7,14 @@
 //
 
 #import <UIKit/UIKit.h>
-
+typedef enum {YWAdPagerAlignmentLeft,
+      YWAdPagerAlignmentCenter,
+      YWAdPagerAlignmentRight}YWAdPagerAlignment;
 @interface YWAdView : UIView
 /**
  *  imgid,imgurl,imgtext
  */
 @property(strong,nonatomic) NSArray * dataDictArray;
+@property (assign,nonatomic) YWAdPagerAlignment PageAlignment;
+
 @end
