@@ -52,7 +52,7 @@
 {
     if (!_localImageDict) {
         NSUserDefaults * def = [NSUserDefaults standardUserDefaults];
-        _localImageDict =  [def objectForKey:@"YWAdCache_DictUrlLocalPath"];
+        _localImageDict =  [NSMutableDictionary dictionaryWithDictionary:[def objectForKey:@"YWAdCache_DictUrlLocalPath"]];
         if (_localImageDict==nil) {
             _localImageDict = [NSMutableDictionary dictionary];
         }
