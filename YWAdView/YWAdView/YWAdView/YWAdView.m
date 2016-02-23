@@ -84,16 +84,54 @@
 
 -(void)setupViews
 {
+    for (UIView * view in self.scrollView.subviews) {
+        [view removeFromSuperview];
+    }
     for (int i = 0; i<self.dataDictArray.count; i++) {
         NSDictionary * dict = [self.dataDictArray objectAtIndex:i];
         NSString * localImagePath = [self cachePathWithImageName: [self.localImageDict objectForKey:[dict valueForKey:@"imgurl"]]];
         UIButton * btn = [[UIButton alloc] initWithFrame:CGRectMake(SELFWIDTH*i,0, SELFWIDTH, SELFHEIGHT)];
-        
+        btn.tag=i;
         UIImage * img= [UIImage imageWithContentsOfFile:localImagePath];
         [btn setBackgroundImage:img forState:UIControlStateNormal];
+        [btn setBackgroundImage:img forState:UIControlStateHighlighted];
+        [self drawTextLayer:btn];
         [self.scrollView addSubview:btn];
     }
     [self.timer fire];
+}
+
+
+
+-(void)drawTextLayer:(UIButton *)btn
+{
+    NSDictionary * dict = [self.dataDictArray objectAtIndex:btn.tag];
+    NSString * text = [dict objectForKey:@"adtext"] ==nil?@"":[dict objectForKey:@"adtext"];
+    if ([text isEqualToString:@""]) {
+        return;
+    }else{
+        UILabel * lblLabel =[UILabel new];
+        lblLabel.text = [NSString stringWithFormat:@"  %@",text];
+        lblLabel.font = [UIFont systemFontOfSize:13];
+        lblLabel.textColor = [UIColor whiteColor];
+        lblLabel.frame = CGRectMake(0, SELFHEIGHT-20, SELFWIDTH, 20);
+        lblLabel.backgroundColor = [[UIColor clearColor] colorWithAlphaComponent:0.4];
+        switch (self.TextAlignment) {
+            case YWAdTextAlignmentLeft:
+                lblLabel.textAlignment =  NSTextAlignmentLeft;
+                break;
+            case YWAdTextAlignmentCenter:
+                lblLabel.textAlignment= NSTextAlignmentCenter;
+                break;
+            case YWAdTextAlignmentRight:
+                lblLabel.textAlignment = NSTextAlignmentRight;
+                break;
+            default:
+                break;
+        }
+        
+        [btn addSubview:lblLabel];
+    }
 }
 
 /**
@@ -172,10 +210,17 @@
             self.pageControl.frame = CGRectMake(10, SELFHEIGHT-20, self.dataDictArray.count*20, 20);
             break;
         case YWAdPagerAlignmentRight:
-            self.pageControl.frame = CGRectMake(SELFWIDTH-self.dataDictArray.count*20-10, SELFHEIGHT-20, self.dataDictArray.count*20, 20);
+            self.pageControl.frame = CGRectMake(SELFWIDTH-self.dataDictArray.count*20, SELFHEIGHT-20, self.dataDictArray.count*20, 20);
             break;
         default:
             break;
     }
 }
+
+-(void)setTextAlignment:(YWAdTextAlignment)TextAlignment
+{
+    _TextAlignment = TextAlignment;
+    [self setupViews];
+}
+
 @end
