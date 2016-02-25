@@ -46,7 +46,13 @@ adv.dataDictArray = [self getdata];
 其他设置  
 1.分页指示器位置
 ```
-//adv.PageAlignment = YWAdPagerAlignmentCenter;(默认)
+//adv.PageAlignment = YWAdPagerAlignmentCenter;(无描述文字默认)
                       YWAdPagerAlignmentLeft;
-                      YWAdPagerAlignmentRight;
+                      YWAdPagerAlignmentRight(有描述文字默认);
+```
+2.描述文字的位置
+```
+//adv.TextAlignment = YWAdTextAlignmentLeft(默认);
+                      YWAdTextAlignmentCenter
+                      YWAdTextAlignmentRight
 ```
