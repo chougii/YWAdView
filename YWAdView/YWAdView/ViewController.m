@@ -18,6 +18,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [YWAdView clearCache];
     YWAdView * adv = [[YWAdView alloc] initWithFrame:CGRectMake(0, 120, SCREENWIDTH, 120)];
     adv.dataDictArray = [self getdata];
     adv.PageAlignment = YWAdPagerAlignmentRight;

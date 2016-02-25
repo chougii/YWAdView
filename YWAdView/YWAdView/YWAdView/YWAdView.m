@@ -70,7 +70,6 @@
     self.pageControl.numberOfPages = dataDictArray.count;
     self.pageControl.bounds = CGRectMake(0, 0, 20*dataDictArray.count, 20);
     self.pageControl.currentPage=0;
-    self.backgroundColor = [UIColor redColor];
     //多线程加载/缓存图片
     dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
     dispatch_async(queue, ^{
@@ -222,5 +221,39 @@
     _TextAlignment = TextAlignment;
     [self setupViews];
 }
++(void)clearCache
+{
+    NSUserDefaults * def = [NSUserDefaults standardUserDefaults];
+    NSMutableDictionary * cachedict =  [NSMutableDictionary dictionaryWithDictionary:[def objectForKey:@"YWAdCache_DictUrlLocalPath"]];
+    NSArray* paths  =NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,NSUserDomainMask, YES);
+    NSString *path = [paths objectAtIndex:0];
+    [cachedict enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
+        NSString * name = (NSString*)obj;
+        NSString*imagePath=[path stringByAppendingString:[NSString stringWithFormat:@"/%@.jpg",name]];
+        NSError * error=nil;
+        if ([self isFileExitsAtPath:imagePath]) {
+            [[NSFileManager defaultManager] removeItemAtPath:imagePath error:&error];
+            
+            if (error) {
+                NSLog(@"移除文件失败，错误信息：%@", error);
+            }
+            else {
+                NSLog(@"成功移除文件");
+            }
+        }
+        else {
+            NSLog(@"文件不存在");
+        }
+    }];
+    [def removeObjectForKey:@"YWAdCache_DictUrlLocalPath"];
+    [def synchronize];
+}
 
++ (BOOL)isFileExitsAtPath:(NSString *)filePath {
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    if ([fileManager fileExistsAtPath:filePath isDirectory:NULL]) {
+        return YES;
+    }
+    return NO;
+}
 @end

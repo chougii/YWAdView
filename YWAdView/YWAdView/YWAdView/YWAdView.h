@@ -25,4 +25,5 @@ typedef enum {
 @property(strong,nonatomic) NSArray * dataDictArray;
 @property (assign,nonatomic) YWAdPagerAlignment PageAlignment;
 @property (assign,nonatomic) YWAdTextAlignment TextAlignment;
++(void)clearCache;
 @end
