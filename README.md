@@ -56,3 +56,7 @@ adv.dataDictArray = [self getdata];
                       YWAdTextAlignmentCenter
                       YWAdTextAlignmentRight
 ```
+3.清除缓存
+```
++(void)clearCache;
+```
