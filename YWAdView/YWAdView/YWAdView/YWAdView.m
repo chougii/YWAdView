@@ -15,6 +15,7 @@
 @property (nonatomic,weak) UIScrollView * scrollView;
 @property (nonatomic,assign) int curPage;
 @property (nonatomic,strong) NSTimer * timer;
+@property (nonatomic,weak) UILabel * lblLoading;
 
 @end
 @implementation YWAdView
@@ -70,6 +71,15 @@
     self.pageControl.numberOfPages = dataDictArray.count;
     self.pageControl.bounds = CGRectMake(0, 0, 20*dataDictArray.count, 20);
     self.pageControl.currentPage=0;
+    //显示等待label
+    UILabel * lblLoading = [UILabel new];
+    lblLoading.bounds = CGRectMake(0, 0, 100, 20);
+    lblLoading.center = CGPointMake(SELFWIDTH/2, SELFHEIGHT/2);
+    lblLoading.text = @"加载中...";
+    lblLoading.font = [UIFont systemFontOfSize:12];
+    lblLoading.textColor = [UIColor redColor];
+    self.lblLoading= lblLoading;
+    [self addSubview:lblLoading];
     //多线程加载/缓存图片
     dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
     dispatch_async(queue, ^{
@@ -165,10 +175,13 @@
                         break;
                     }
                 }
+            }else{
+                NSLog(@"write file success!");
             }
             [self.localImageDict setObject:imgName forKey:imgUrlStr];
         }
     }
+    [self.lblLoading removeFromSuperview];
     
     NSUserDefaults * def = [NSUserDefaults standardUserDefaults];
     [def setObject:self.localImageDict forKey:@"YWAdCache_DictUrlLocalPath"];
