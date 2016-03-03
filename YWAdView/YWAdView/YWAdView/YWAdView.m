@@ -86,6 +86,9 @@
         [self cacheImage];
         dispatch_async(dispatch_get_main_queue(), ^{
             //绘制界面
+            if (self.lblLoading) {
+                [self.lblLoading removeFromSuperview];
+            }
             [self setupViews];
         });
     });
@@ -181,7 +184,8 @@
             [self.localImageDict setObject:imgName forKey:imgUrlStr];
         }
     }
-    [self.lblLoading removeFromSuperview];
+    
+   
     
     NSUserDefaults * def = [NSUserDefaults standardUserDefaults];
     [def setObject:self.localImageDict forKey:@"YWAdCache_DictUrlLocalPath"];
